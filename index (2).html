@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>LUMO – ต้นแบบเว็บไซต์ร้าน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ฉากโคมไฟออกแบบเป็นโทนมืดโดยตั้งใจ จึงใช้ชุดสีเดียวทั้งโหมดสว่างและมืด */
+:root{--bg:#0d0b09;--sf:#17130f;--sf2:#201a14;--tx:#f4ece0;--mu:#bdb09c;--ln:rgba(255,232,196,.15);--am:#e9c08a;--am2:#ffd9a0;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;background:var(--bg)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:'Kanit','Noto Sans Thai',sans-serif;font-size:18px;line-height:1.75;overflow-x:hidden}
+body.lock{overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--am2);outline-offset:3px}
+.glow{position:fixed;left:0;top:0;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:1;opacity:0;transition:opacity .6s;background:radial-gradient(closest-side,rgba(255,196,120,.13),rgba(255,196,120,.05) 55%,transparent);will-change:transform}
+.glow.on{opacity:1}
+.bar{height:38px;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:14px;color:var(--mu);border-bottom:1px solid var(--ln);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero{position:relative;height:calc(100svh - 38px - env(safe-area-inset-top,0px));min-height:600px;overflow:hidden;display:flex;flex-direction:column;align-items:center;z-index:2}
+.wash{position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 22%,rgba(255,190,110,.2),transparent 70%);opacity:0;transition:opacity 1.6s ease}
+.lamp{position:relative;flex:none;height:clamp(250px,46svh,430px);aspect-ratio:260/420}
+.lamp svg{width:100%;height:100%;display:block;overflow:visible}
+.halo{position:absolute;left:50%;top:41%;width:380px;height:380px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,214,150,.6),rgba(255,190,110,.18) 55%,transparent);opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.cone{position:absolute;left:50%;top:41%;width:min(130vw,980px);height:80svh;transform:translateX(-50%);clip-path:polygon(45% 0,55% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,208,135,.34),rgba(255,208,135,.07) 70%,transparent);filter:blur(10px);opacity:0;transition:opacity 1.4s ease;pointer-events:none}
+.on .halo,.on .cone,.on .wash{opacity:1}
+.shade{fill:url(#sg)}.bulb{fill:#4a4036;transition:fill 1s ease,filter 1s ease}
+.on .bulb{fill:#ffe6b4;filter:drop-shadow(0 0 14px #ffd48a)}
+#pull{cursor:grab;touch-action:none;outline:none}#pull:active{cursor:grabbing}
+#pull:focus-visible #bead{stroke:#fff;stroke-width:3}
+#ring{fill:none;stroke:var(--am2);stroke-width:1.5;transform-box:fill-box;transform-origin:center;animation:ring 2.2s ease-out infinite}
+.used #ring{display:none}
+@keyframes ring{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+.hero-t{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px 40px;opacity:0;transform:translateY(18px);transition:opacity 1.2s ease .35s,transform 1.2s ease .35s;pointer-events:none}
+.on .hero-t{opacity:1;transform:none;pointer-events:auto}
+h1{font-size:clamp(60px,14vw,150px);line-height:1.05;font-weight:600;letter-spacing:.04em}
+.tag{margin:14px 0 30px;font-size:clamp(18px,2.4vw,23px);color:#eadfce;max-width:520px}
+.acts{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.b{min-height:52px;padding:0 28px;border-radius:12px;border:1px solid var(--ln);background:transparent;font-weight:500;font-size:17px;transition:background .25s,transform .25s,border-color .25s}
+.b:hover{border-color:var(--am)}.b:active{transform:scale(.97)}
+.b.p{background:var(--am);border-color:var(--am);color:#1a130b}.b.p:hover{background:var(--am2)}
+.hint{position:absolute;left:0;right:0;bottom:calc(34px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--mu);font-size:16px;transition:opacity .6s}
+.on .hint{opacity:.7}
+main section{position:relative;z-index:2;padding:96px 24px;max-width:1040px;margin:0 auto}
+.sec{border-top:1px solid var(--ln)}
+h2{font-size:clamp(32px,5.5vw,52px);line-height:1.25;font-weight:600;margin-bottom:14px}
+.lead{color:#d6cab8;max-width:600px;margin-bottom:40px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.facts div{border-top:1px solid var(--ln);padding-top:16px}
+.facts small{display:block;color:var(--mu);font-size:15px}
+.facts span{font-size:19px;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px;margin-bottom:32px}
+.card{--x:50%;--y:0%;position:relative;padding:26px;border:1px solid var(--ln);border-radius:18px;background:radial-gradient(240px circle at var(--x) var(--y),rgba(255,206,140,.1),transparent 70%),var(--sf);transition:border-color .3s}
+.card:hover{border-color:rgba(255,222,170,.4)}
+.card h3{font-size:21px;font-weight:500;line-height:1.4}.card p{color:var(--mu);font-size:16px;margin-top:4px}
+.pr{margin-top:14px;font-size:22px;font-weight:600;color:var(--am2)}
+.bd{display:inline-block;font-size:13px;line-height:1;padding:6px 10px;border-radius:20px;background:rgba(233,192,138,.16);color:var(--am2);margin-bottom:12px}
+.big{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}.big .card{padding:32px}
+.map{border:1px solid var(--ln);border-radius:20px;overflow:hidden;position:relative;margin-bottom:28px}
+.map svg{display:block;width:100%;height:auto}
+.mb{position:absolute;left:14px;top:14px;font-size:13px;padding:4px 12px;border-radius:20px;background:rgba(13,11,9,.78);color:var(--am2);border:1px solid var(--ln)}
+.pulse{transform-box:fill-box;transform-origin:center;animation:ring 2.4s ease-out infinite}
+.cta{text-align:center}.cta .lead{margin-left:auto;margin-right:auto}
+footer{position:relative;z-index:2;padding:36px 24px calc(120px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--mu);font-size:15px;border-top:1px solid var(--ln)}
+.dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:4px;padding:6px;border-radius:20px;background:rgba(23,19,15,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--ln);transform:translate(-50%,160%);transition:transform .6s cubic-bezier(.2,.8,.2,1);max-width:calc(100vw - 20px)}
+.dock.show{transform:translate(-50%,0)}
+.dock button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 14px;border-radius:14px;font-size:14px;min-width:68px;color:#e6dac8;transition:background .25s}
+.dock button:hover{background:rgba(255,222,170,.1)}
+.dock svg{width:22px;height:22px;stroke:var(--am);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sh{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(5,4,3,.66);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s}
+.sh.open{display:flex}.sh.in{opacity:1}
+.panel{width:min(100%,620px);max-height:90svh;overflow:auto;background:var(--sf);border:1px solid var(--ln);border-radius:26px 26px 0 0;padding:28px 24px calc(28px + env(safe-area-inset-bottom,0px));transform:translateY(48px);transition:transform .5s cubic-bezier(.2,.8,.2,1);overscroll-behavior:contain}
+.in .panel{transform:none}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}
+.ph h2{font-size:30px;margin:0}
+.x{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--ln);background:none;font-size:22px;line-height:1}
+.row{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-top:1px solid var(--ln)}
+.row h3{font-size:19px;font-weight:500;line-height:1.4}.row p{color:var(--mu);font-size:15px}
+.row .pr{margin:0;font-size:19px;white-space:nowrap}
+form{display:grid;gap:16px}
+label{display:grid;gap:6px;font-size:16px;font-weight:500}
+input,select{font:inherit;font-weight:400;color:var(--tx);background:var(--sf2);border:1px solid var(--ln);border-radius:12px;padding:0 14px;min-height:52px;width:100%;color-scheme:dark}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.step{display:flex;align-items:center;justify-content:space-between;background:var(--sf2);border:1px solid var(--ln);border-radius:12px;min-height:52px;padding:0 6px}
+.step button{width:42px;height:42px;border-radius:10px;border:0;background:rgba(255,222,170,.1);font-size:22px}
+.err{color:#ffb4a0;font-size:15px;min-height:1.4em}
+.ok{text-align:center;padding:12px 0}.ok .big2{font-size:44px;color:var(--am2)}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--am);color:#1a130b;padding:10px 20px;border-radius:30px;font-weight:500;font-size:16px;opacity:0;pointer-events:none;transition:.4s;z-index:60}
+.toast.s{opacity:1;transform:translate(-50%,0)}
+@media (max-width:720px){main section{padding:72px 20px}.facts{grid-template-columns:1fr}.dock button{padding:8px 10px;min-width:62px}}
+@media (min-width:721px){.sh{align-items:center}.panel{border-radius:26px}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="glow" id="glow"></div>
+<div class="bar">ต้นแบบเว็บไซต์ร้าน · ข้อมูลทั้งหมดเป็นตัวอย่าง ปรับเป็นร้านประเภทไหนก็ได้</div>
+
+<header class="hero" id="hero">
+  <div class="wash"></div>
+  <div class="lamp">
+    <div class="cone"></div><div class="halo"></div>
+    <svg id="svg" viewBox="0 0 260 420" aria-hidden="false">
+      <defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#2b2218"/><stop offset=".5" stop-color="#4f3e29"/><stop offset="1" stop-color="#2b2218"/></linearGradient></defs>
+      <g id="sw">
+        <line x1="130" y1="-60" x2="130" y2="72" stroke="#3b3329" stroke-width="3"/>
+        <rect x="122" y="66" width="16" height="14" rx="3" fill="#3b3329"/>
+        <path class="shade" d="M92 80H168L214 170H46Z"/>
+        <ellipse cx="130" cy="170" rx="84" ry="10" fill="#171109"/>
+        <ellipse class="bulb" cx="130" cy="172" rx="26" ry="13"/>
+        <line id="cord" x1="206" y1="168" x2="206" y2="250" stroke="#b89a6a" stroke-width="2"/>
+        <g id="pull" role="switch" aria-checked="false" aria-label="ดึงสายไฟเพื่อเปิดหรือปิดไฟ" tabindex="0">
+          <circle id="ring" cx="206" cy="250" r="14"/>
+          <circle id="hit" cx="206" cy="250" r="36" fill="transparent"/>
+          <circle id="bead" cx="206" cy="250" r="11" fill="#dcb878"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-t">
+    <h1 id="nm"></h1>
+    <p class="tag" id="tg"></p>
+    <div class="acts"><button class="b p" data-open="pop">ดูเมนูยอดฮิต</button><button class="b" data-open="book">จองออนไลน์</button></div>
+  </div>
+  <p class="hint" id="hint">ดึงสายไฟลงเพื่อเปิดไฟ</p>
+</header>
+
+<main>
+  <section id="about"><h2>เรื่องราวของร้าน</h2><p class="lead" id="ab"></p>
+    <div class="facts" id="facts"></div></section>
+  <section class="sec" id="popular"><h2>ยอดฮิตของร้าน</h2><p class="lead">รายการที่ลูกค้าสั่งกันบ่อยที่สุด</p>
+    <div class="grid" id="gp"></div><button class="b" data-open="pop">ดูเมนูยอดฮิตทั้งหมด</button></section>
+  <section class="sec" id="rec"><h2>ทางร้านแนะนำ</h2><p class="lead">เลือกจากความตั้งใจของทีมงาน ลองแล้วจะเข้าใจ</p>
+    <div class="grid big" id="gr"></div><button class="b" data-open="rec">ดูรายการที่ร้านแนะนำ</button></section>
+  <section class="sec" id="where"><h2>มาหาเราได้ที่นี่</h2><p class="lead" id="ad"></p>
+    <div class="map" id="mp"></div><button class="b" data-open="map">ดูแผนที่ร้าน</button></section>
+  <section class="sec cta" id="bk"><h2>จองล่วงหน้า ไม่ต้องรอคิว</h2><p class="lead">เลือกวัน เวลา และจำนวนคน ใช้เวลาไม่ถึงหนึ่งนาที</p>
+    <button class="b p" data-open="book">จองออนไลน์</button></section>
+</main>
+<footer>ต้นแบบเว็บไซต์ โดย NANON | DESIGNER · ข้อมูลและแผนที่เป็นแบบจำลอง</footer>
+
+<nav class="dock" id="dock" aria-label="เมนูลัด"></nav>
+<div class="sh" id="sh" aria-hidden="true"><div class="panel" id="pn" role="dialog" aria-modal="true" aria-labelledby="pt" tabindex="-1"></div></div>
+<div class="toast" id="ts" role="status"></div>
+
+<script>
+(function(){
+var S={name:'LUMO',tag:'ร้านเล็กๆ ที่อยากให้คุณแวะมานั่งนานๆ',
+about:'เราเริ่มจากความชอบเรียบง่าย คือของดี บรรยากาศสบาย และการดูแลที่เป็นกันเอง ทุกอย่างในร้านคัดมาเพื่อให้คุณมาแล้วรู้สึกว่าใช้เวลาไปคุ้มค่า',
+hours:'ทุกวัน 09:00 – 20:00',addr:'123 ถนนตัวอย่าง แขวงสมมติ เขตจำลอง กรุงเทพฯ 10110',tel:'02-000-0000',
+pop:[['ลาเต้เย็นสูตรร้าน','เข้มกลมกล่อม หอมนมสด',85],['ครัวซองต์เนยสด','อบใหม่ทุกเช้า กรอบนอกนุ่มใน',95],['พาสต้าครีมเห็ด','เส้นสดทำเอง ซอสเข้มข้น',145],['ชาไทยนมสด','รสเดิมที่คนติดใจ',70],['ชีสเค้กบลูเบอร์รี่','เนื้อเนียน เปรี้ยวหวานพอดี',120],['โกโก้เข้มข้น','ช็อกโกแลตแท้ ไม่หวานจัด',90]],
+rec:[['เซตบ่ายสบายๆ','เครื่องดื่ม 1 แก้ว กับขนมประจำวัน',189,'ทีมงานแนะนำ'],['จานเด็ดประจำฤดู','เมนูที่เปลี่ยนตามวัตถุดิบเด่นของเดือน',245,'ตามฤดูกาล'],['เซตแบ่งกันสำหรับสองคน','อิ่มพอดี คุ้มกว่าสั่งแยก',329,'คุ้มที่สุด']]};
+var $=function(s){return document.querySelector(s)};
+var ic={pop:'<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',rec:'<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/>',map:'<path d="M12 21s-6-5.6-6-11a6 6 0 0112 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',book:'<path d="M4 7h16v13H4zM4 11h16M8 3v4M16 3v4"/>'};
+var lb={pop:'ยอดฮิต',rec:'แนะนำ',map:'แผนที่',book:'จองออนไลน์'};
+$('#nm').textContent=S.name;$('#tg').textContent=S.tag;$('#ab').textContent=S.about;$('#ad').textContent=S.addr;
+$('#facts').innerHTML='<div><small>เวลาเปิด</small><span>'+S.hours+'</span></div><div><small>โทร</small><span>'+S.tel+'</span></div><div><small>ที่ตั้ง</small><span>'+S.addr.split(' ').slice(0,3).join(' ')+'</span></div>';
+function card(a){return '<article class="card">'+(a[3]?'<span class="bd">'+a[3]+'</span>':'')+'<h3>'+a[0]+'</h3><p>'+a[1]+'</p><div class="pr">฿'+a[2]+'</div></article>'}
+$('#gp').innerHTML=S.pop.slice(0,4).map(card).join('');$('#gr').innerHTML=S.rec.map(card).join('');
+$('#dock').innerHTML=['pop','rec','map','book'].map(function(k){return '<button data-open="'+k+'"><svg viewBox="0 0 24 24">'+ic[k]+'</svg>'+lb[k]+'</button>'}).join('');
+var MAP='<svg viewBox="0 0 600 340" role="img" aria-label="แผนที่จำลองตำแหน่งร้าน"><rect width="600" height="340" fill="#1c1711"/><path d="M-10 250C120 210 220 290 360 240S560 200 620 230" stroke="#22344a" stroke-width="30" fill="none"/><rect x="40" y="30" width="150" height="90" rx="14" fill="#202c1f"/><g fill="#272015"><rect x="230" y="30" width="110" height="80" rx="8"/><rect x="380" y="30" width="170" height="80" rx="8"/><rect x="40" y="150" width="110" height="60" rx="8"/><rect x="380" y="150" width="90" height="60" rx="8"/><rect x="500" y="150" width="70" height="60" rx="8"/></g><g stroke="#3d3326" fill="none" stroke-linecap="round"><path d="M0 130H600" stroke-width="16"/><path d="M205 0V340" stroke-width="16"/><path d="M360 0V340" stroke-width="12"/><path d="M0 40H600M0 290H600M480 0V340" stroke-width="5"/></g><circle class="pulse" cx="300" cy="118" r="18" fill="rgba(255,206,140,.4)"/><circle class="pulse" cx="300" cy="118" r="18" fill="rgba(255,206,140,.4)" style="animation-delay:1.2s"/><path d="M300 138s-14-13-14-24a14 14 0 0128 0c0 11-14 24-14 24z" fill="#e9c08a"/><circle cx="300" cy="114" r="5" fill="#1a130b"/><text x="300" y="170" text-anchor="middle" fill="#f4ece0" font-size="17" font-weight="600" font-family="Kanit,sans-serif" letter-spacing="2">'+S.name+'</text></svg><span class="mb">แผนที่จำลอง</span>';
+$('#mp').innerHTML=MAP;
+
+/* ---------- โคมไฟ ---------- */
+var hero=$('#hero'),pull=$('#pull'),svg=$('#svg'),lit=false,y=0,v=0,ang=0,w=0,drag=false,fired=false,sy=0,raf=0,last=0,mx=0;
+var rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function paint(){var yy=250+y;['cord'].forEach(function(i){$('#'+i).setAttribute('y2',yy)});['bead','hit','ring'].forEach(function(i){$('#'+i).setAttribute('cy',yy)});$('#sw').setAttribute('transform','rotate('+ang+' 130 -60)')}
+function toggle(){lit=!lit;hero.classList.toggle('on',lit);hero.classList.add('used');pull.setAttribute('aria-checked',lit);
+ $('#hint').textContent=lit?'ดึงสายอีกครั้งเพื่อปิดไฟ':'ดึงสายไฟลงเพื่อเปิดไฟ';w+=rm?0:26;try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}kick();dock()}
+function step(t){var dt=Math.min(.032,(t-last)/1000||.016);last=t;
+ if(!drag){v+=(-240*y-13*v)*dt;y+=v*dt}
+ w+=(-46*ang-2.4*w)*dt;ang+=w*dt;paint();
+ if(drag||Math.abs(y)>.05||Math.abs(v)>.5||Math.abs(ang)>.02||Math.abs(w)>.05){raf=requestAnimationFrame(step)}else{y=0;ang=0;paint();raf=0}}
+function kick(){if(!raf){last=performance.now();raf=requestAnimationFrame(step)}}
+pull.addEventListener('pointerdown',function(e){drag=true;fired=false;mx=0;sy=e.clientY;pull.setPointerCapture(e.pointerId);e.preventDefault();kick()});
+pull.addEventListener('pointermove',function(e){if(!drag)return;var sc=svg.getBoundingClientRect().height/420,r=(e.clientY-sy)/sc;y=r>0?120*Math.tanh(r/120):r*.1;v=0;mx=Math.max(mx,y);
+ if(!fired&&y>=56){fired=true;toggle()}});
+function up(){if(!drag)return;drag=false;if(mx<6&&!fired){v=420;toggle()}kick()}
+pull.addEventListener('pointerup',up);pull.addEventListener('pointercancel',up);
+pull.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();v=420;toggle()}});
+
+/* ---------- แสงตามเมาส์/นิ้ว ---------- */
+var gl=$('#glow'),gx=innerWidth/2,gy=innerHeight/3,tx=gx,ty=gy,gr=0,gt;
+function gtick(){gx+=(tx-gx)*.14;gy+=(ty-gy)*.14;gl.style.transform='translate3d('+(gx-260)+'px,'+(gy-260)+'px,0)';
+ gr=(Math.abs(tx-gx)+Math.abs(ty-gy)>.5)?requestAnimationFrame(gtick):0}
+function gmove(x,y2){tx=x;ty=y2;gl.classList.add('on');clearTimeout(gt);if(!gr)gr=requestAnimationFrame(gtick)}
+addEventListener('pointermove',function(e){if(e.pointerType!=='touch')gmove(e.clientX,e.clientY)},{passive:true});
+function gt2(e){var t=e.touches[0];if(t){gmove(t.clientX,t.clientY);clearTimeout(gt)}}
+addEventListener('touchstart',gt2,{passive:true});addEventListener('touchmove',gt2,{passive:true});
+addEventListener('touchend',function(){gt=setTimeout(function(){gl.classList.remove('on')},900)},{passive:true});
+document.addEventListener('mouseleave',function(){gl.classList.remove('on')});
+document.addEventListener('pointermove',function(e){var c=e.target.closest&&e.target.closest('.card');if(c){var r=c.getBoundingClientRect();c.style.setProperty('--x',(e.clientX-r.left)+'px');c.style.setProperty('--y',(e.clientY-r.top)+'px')}},{passive:true});
+
+/* ---------- dock ---------- */
+var dk=$('#dock');function dock(){dk.classList.toggle('show',lit||scrollY>innerHeight*.5)}
+addEventListener('scroll',dock,{passive:true});dock();
+
+/* ---------- แผ่นรายละเอียด ---------- */
+var sh=$('#sh'),pn=$('#pn'),opener=null;
+function toast(m){var t=$('#ts');t.textContent=m;t.classList.add('s');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('s')},2200)}
+function list(a){return a.map(function(i){return '<div class="row"><div>'+(i[3]?'<span class="bd">'+i[3]+'</span>':'')+'<h3>'+i[0]+'</h3><p>'+i[1]+'</p></div><div class="pr">฿'+i[2]+'</div></div>'}).join('')}
+function head(t){return '<div class="ph"><h2 id="pt">'+t+'</h2><button class="x" data-close aria-label="ปิด">&times;</button></div>'}
+function view(k){
+ if(k==='pop')return head('เมนูยอดฮิต')+list(S.pop);
+ if(k==='rec')return head('ทางร้านแนะนำ')+list(S.rec.concat([]));
+ if(k==='map')return head('แผนที่ร้าน')+'<div class="map">'+MAP+'</div><p>'+S.addr+'</p><p style="color:var(--mu)">เปิด '+S.hours+' · โทร '+S.tel+'</p><div class="acts" style="justify-content:flex-start;margin-top:18px"><button class="b p" id="cp">คัดลอกที่อยู่</button></div>';
+ var d=new Date();d.setDate(d.getDate()+1);var ds=d.toISOString().slice(0,10),mn=new Date().toISOString().slice(0,10),o='';
+ for(var h=10;h<=19;h++)o+='<option>'+(h<10?'0':'')+h+':00</option>';
+ return head('จองออนไลน์')+'<form id="fm" novalidate><label>ชื่อผู้จอง<input id="fn" autocomplete="name" placeholder="ชื่อของคุณ"></label><label>เบอร์โทร<input id="fp" type="tel" inputmode="tel" autocomplete="tel" placeholder="08x-xxx-xxxx"></label><div class="two"><label>วันที่<input id="fd" type="date" value="'+ds+'" min="'+mn+'"></label><label>เวลา<select id="ft">'+o+'</select></label></div><label>จำนวนคน<div class="step"><button type="button" id="mi" aria-label="ลด">&minus;</button><b id="gn">2</b><button type="button" id="pl" aria-label="เพิ่ม">+</button></div></label><p class="err" id="er" role="alert"></p><button class="b p" type="submit">ยืนยันการจอง</button></form>';
+}
+function bind(k){
+ var c=$('#cp');if(c)c.onclick=function(){try{navigator.clipboard.writeText(S.addr).then(function(){toast('คัดลอกที่อยู่แล้ว')},function(){toast('คัดลอกไม่ได้ กรุณาคัดลอกเอง')})}catch(e){toast('คัดลอกไม่ได้ กรุณาคัดลอกเอง')}};
+ var f=$('#fm');if(!f)return;var n=2;
+ $('#mi').onclick=function(){n=Math.max(1,n-1);$('#gn').textContent=n};$('#pl').onclick=function(){n=Math.min(12,n+1);$('#gn').textContent=n};
+ f.onsubmit=function(e){e.preventDefault();var nm=$('#fn').value.trim(),ph=$('#fp').value.replace(/\D/g,'');
+  if(!nm){$('#er').textContent='กรุณากรอกชื่อผู้จอง';$('#fn').focus();return}
+  if(ph.length<9){$('#er').textContent='กรุณากรอกเบอร์โทรให้ครบ';$('#fp').focus();return}
+  var dt=new Date($('#fd').value+'T00:00').toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  pn.innerHTML=head('ส่งคำขอจองแล้ว')+'<div class="ok"><div class="big2">✓</div><p>คุณ'+nm.replace(/[<>&]/g,'')+'</p><p style="color:var(--mu)">'+dt+' เวลา '+$('#ft').value+' น.<br>'+n+' ท่าน</p><p style="color:var(--mu);font-size:15px;margin-top:16px">นี่คือแบบจำลอง ยังไม่ได้ส่งข้อมูลไปที่ไหน ร้านจริงจะเชื่อมกับระบบจองหรือ LINE ของร้าน</p></div><button class="b p" data-close style="width:100%">เรียบร้อย</button>'}
+}
+function openSheet(k,el){opener=el;pn.innerHTML=view(k);bind(k);sh.classList.add('open');sh.setAttribute('aria-hidden','false');document.body.classList.add('lock');requestAnimationFrame(function(){requestAnimationFrame(function(){sh.classList.add('in');pn.scrollTop=0;pn.focus()})})}
+function closeSheet(){sh.classList.remove('in');sh.setAttribute('aria-hidden','true');document.body.classList.remove('lock');setTimeout(function(){sh.classList.remove('open');pn.innerHTML=''},380);if(opener&&opener.focus)opener.focus()}
+document.addEventListener('click',function(e){var o=e.target.closest('[data-open]');if(o){openSheet(o.dataset.open,o);return}
+ if(e.target.closest('[data-close]')||e.target===sh)closeSheet()});
+addEventListener('keydown',function(e){if(e.key==='Escape'&&sh.classList.contains('open'))closeSheet()});
+})();
+</script>
+</body>
+</html>
